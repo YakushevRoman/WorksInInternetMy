@@ -1,5 +1,6 @@
 package e.user301.worksininternet;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -32,6 +33,10 @@ public class PhotoGalleryFragment extends Fragment {
         setRetainInstance(true);
         setHasOptionsMenu(true);
         update();
+
+        //1 Intent intent = PollService.newIntent(getActivity());
+        //getActivity().startService(intent);
+        // 2 PollService.setSericeAlarm(getActivity(),true);
         Log.d(TAG, "onCreate: background starter");
     }
 
@@ -170,6 +175,13 @@ public class PhotoGalleryFragment extends Fragment {
                 seachView.setQuery(query, false);
             }
         });
+
+        MenuItem toggleItem = menu.findItem(R.id.menu_item_toggle_polling);
+        if (PollService.isServiceAlarm(getActivity()) ){
+            toggleItem.setTitle("Stop polling");
+        }else {
+            toggleItem.setTitle("Start polling");
+        }
     }
 
     @Override
@@ -178,6 +190,12 @@ public class PhotoGalleryFragment extends Fragment {
             case R.id.menu_item_search:
                 QueryPrefereces.setStoreQuery(getActivity(), null);
                 update();
+                return true;
+            case R.id.menu_item_toggle_polling:
+                boolean shouldAlarm = !PollService.isServiceAlarm(getActivity());
+                PollService.setSericeAlarm(getActivity(),shouldAlarm);
+                // обновление меню
+                getActivity().invalidateOptionsMenu();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
